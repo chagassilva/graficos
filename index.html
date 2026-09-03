@@ -1,0 +1,1647 @@
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Hub de Ferramentas - Gerador de Gráficos</title>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.0.0"></script>
+    <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
+
+    <style>
+      :root {
+        --bg-color: #f1f5f9;
+        --card-bg: #ffffff;
+        --border: #e2e8f0;
+        --ish-blue: #5499ff;
+        --ish-bg: #f4f5f7;
+        --ish-text: #333333;
+      }
+
+      body {
+        font-family: "Segoe UI", Roboto, sans-serif;
+        background: var(--bg-color);
+        margin: 0;
+        padding: 20px;
+        color: #333;
+      }
+
+      .layout {
+        display: grid;
+        grid-template-columns: 320px 1fr;
+        gap: 24px;
+        max-width: 1750px;
+        margin: 0 auto;
+      }
+      .panel {
+        background: var(--card-bg);
+        padding: 20px;
+        border-radius: 12px;
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+        border: 1px solid var(--border);
+      }
+
+      label {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        font-size: 0.85rem;
+        font-weight: 600;
+        margin: 12px 0 4px;
+        color: #475569;
+      }
+      input[type="text"],
+      select,
+      textarea {
+        width: 100%;
+        padding: 10px;
+        border: 1px solid #cbd5e1;
+        border-radius: 6px;
+        box-sizing: border-box;
+      }
+      textarea {
+        height: 160px;
+        resize: vertical;
+        font-family: monospace;
+        font-size: 13px;
+      }
+      .hint {
+        font-size: 0.75rem;
+        color: #64748b;
+        margin-top: 4px;
+        line-height: 1.4;
+      }
+
+      .info-box {
+        background: #e0f2fe;
+        border-left: 4px solid #3b82f6;
+        padding: 10px;
+        font-size: 0.75rem;
+        color: #0f172a;
+        border-radius: 0 4px 4px 0;
+        margin-bottom: 12px;
+        line-height: 1.4;
+        display: none;
+      }
+      .info-icon {
+        font-size: 14px;
+        cursor: help;
+      }
+
+      .color-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr 1fr 1fr;
+        gap: 8px;
+        margin-bottom: 12px;
+      }
+      .color-item {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        font-size: 11px;
+        font-weight: bold;
+        color: #64748b;
+        text-align: center;
+      }
+      input[type="color"] {
+        width: 100%;
+        height: 35px;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+        padding: 0;
+      }
+      input[type="color"]::-webkit-color-swatch-wrapper {
+        padding: 0;
+      }
+      input[type="color"]::-webkit-color-swatch {
+        border: 1px solid #cbd5e1;
+        border-radius: 4px;
+      }
+
+      .checkbox-container {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        margin-top: 10px;
+        margin-bottom: 5px;
+        cursor: pointer;
+      }
+      .checkbox-container input {
+        width: 16px;
+        height: 16px;
+        cursor: pointer;
+      }
+
+      button {
+        width: 100%;
+        padding: 12px;
+        margin-top: 12px;
+        border: none;
+        border-radius: 6px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: 0.2s;
+        color: white;
+      }
+      .btn-gerar {
+        background: #0f172a;
+      }
+      .btn-baixar {
+        background: #059669;
+      }
+      .btn-full {
+        background: #2563eb;
+        margin-top: 6px;
+      }
+      button:disabled {
+        opacity: 0.7;
+        cursor: not-allowed;
+      }
+
+      .botoes-full {
+        display: none;
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        z-index: 9999;
+        gap: 10px;
+      }
+      .btn-full-action {
+        color: white;
+        border: none;
+        padding: 10px 24px;
+        border-radius: 6px;
+        font-weight: bold;
+        cursor: pointer;
+        width: auto;
+        font-size: 14px;
+      }
+      .btn-fechar-full {
+        background: #ef4444;
+      }
+      .btn-fechar-full:hover {
+        background: #dc2626;
+      }
+      .btn-baixar-full {
+        background: #059669;
+      }
+      .btn-baixar-full:hover {
+        background: #047857;
+      }
+
+      .render-area {
+        width: 100%;
+        height: 900px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: var(--ish-bg);
+        border-radius: 8px;
+        position: relative;
+        overflow: auto;
+        padding: 20px;
+        box-sizing: border-box;
+      }
+
+      .render-area:fullscreen {
+        background: var(--ish-bg);
+        padding: 40px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+      }
+      .render-area:fullscreen .botoes-full {
+        display: flex;
+      }
+      .render-area:-webkit-full-screen .botoes-full {
+        display: flex;
+      }
+      .render-area:-ms-fullscreen .botoes-full {
+        display: flex;
+      }
+
+      .chart-container {
+        width: 100%;
+        height: 100%;
+        display: none;
+      }
+      canvas {
+        width: 100% !important;
+        height: 100% !important;
+      }
+
+      /* --- MODAL DE EXEMPLOS --- */
+      .modal-bg {
+        display: none;
+        position: fixed;
+        inset: 0;
+        background: rgba(15, 23, 42, 0.7);
+        z-index: 10000;
+        align-items: center;
+        justify-content: center;
+        padding: 20px;
+        backdrop-filter: blur(4px);
+      }
+      .modal-card {
+        background: white;
+        border-radius: 12px;
+        width: 100%;
+        max-width: 600px;
+        max-height: 85vh;
+        overflow-y: auto;
+        padding: 24px;
+        box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+      }
+      .exemplo-block {
+        background: #f8fafc;
+        border: 1px solid #e2e8f0;
+        border-radius: 8px;
+        padding: 12px;
+        margin-bottom: 16px;
+      }
+      .exemplo-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 8px;
+      }
+      .exemplo-header strong {
+        color: #0f172a;
+        font-size: 14px;
+      }
+      .btn-usar-exemplo {
+        width: auto;
+        margin: 0;
+        padding: 6px 12px;
+        font-size: 12px;
+        background: #3b82f6;
+      }
+      .btn-usar-exemplo:hover {
+        background: #2563eb;
+      }
+      .exemplo-texto {
+        margin: 0;
+        font-family: monospace;
+        font-size: 12px;
+        color: #475569;
+        white-space: pre-wrap;
+      }
+
+      /* --- TEMPLATE ISHIKAWA --- */
+      .ishikawa-box {
+        position: relative;
+        width: 1200px;
+        height: 850px;
+        background: var(--ish-bg);
+        color: var(--ish-text);
+        font-family: "Segoe UI", sans-serif;
+        display: none;
+        border-radius: 12px;
+        overflow: hidden;
+        flex-shrink: 0;
+      }
+
+      .ish-titulo {
+        text-align: center;
+        font-size: 26px;
+        font-weight: 800;
+        padding-top: 25px;
+        color: var(--ish-text);
+        letter-spacing: 1px;
+        text-transform: uppercase;
+      }
+      .ish-titulo span {
+        border-bottom: 3px solid var(--ish-text);
+        padding-bottom: 5px;
+        opacity: 0.8;
+      }
+
+      .ish-svg-layer {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        z-index: 1;
+        pointer-events: none;
+      }
+      .svg-fill {
+        fill: var(--ish-blue);
+      }
+      .svg-stroke {
+        stroke: var(--ish-blue);
+      }
+
+      .ish-node {
+        position: absolute;
+        width: 50px;
+        height: 50px;
+        background: var(--ish-blue);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-weight: bold;
+        font-size: 20px;
+        top: calc(400px - 25px);
+        z-index: 5;
+        box-shadow: 3px 5px 15px rgba(0, 0, 0, 0.2);
+      }
+      .node-1 {
+        left: 895px;
+      }
+      .node-2 {
+        left: 605px;
+      }
+      .node-3 {
+        left: 315px;
+      }
+
+      .ish-categoria {
+        position: absolute;
+        width: 240px;
+        z-index: 5;
+        display: flex;
+        flex-direction: column;
+        align-items: flex-end;
+      }
+      .cat-top {
+        justify-content: flex-start;
+      }
+      .cat-bottom {
+        flex-direction: column-reverse;
+        justify-content: flex-start;
+      }
+
+      .ish-pilula {
+        background: var(--ish-blue);
+        color: white;
+        padding: 6px 18px;
+        border-radius: 20px;
+        font-weight: bold;
+        font-size: 13px;
+        display: inline-block;
+        text-transform: uppercase;
+        box-shadow: 2px 3px 8px rgba(0, 0, 0, 0.15);
+        margin-right: 40px;
+      }
+
+      .ish-causas-lista {
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+        margin-top: 10px;
+        margin-bottom: 10px;
+        width: 100%;
+      }
+      .ish-causa-item {
+        display: flex;
+        flex-direction: row-reverse;
+        align-items: flex-start;
+        text-align: right;
+        font-size: 13px;
+        color: var(--ish-text);
+        font-weight: 600;
+        line-height: 1.4;
+      }
+      .ish-causa-item::before {
+        content: "";
+        display: inline-block;
+        min-width: 6px;
+        height: 6px;
+        background: var(--ish-blue);
+        border-radius: 50%;
+        margin-left: 8px;
+        margin-top: 5px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="layout">
+      <div class="panel">
+        <h3>⚙️ Controles</h3>
+
+        <label for="titulo">Título Principal</label>
+        <input
+          type="text"
+          id="titulo"
+          value="COMPARAÇÃO OFICIAL (TMO FOR vs REAL)"
+        />
+
+        <label>Personalização de Cores</label>
+        <div class="color-grid">
+          <div class="color-item">
+            <input
+              type="color"
+              id="corPeixe"
+              value="#f97316"
+              onchange="atualizarCores()"
+            />
+            <span>Principal</span>
+          </div>
+          <div class="color-item">
+            <input
+              type="color"
+              id="corFundo"
+              value="#ffffff"
+              onchange="atualizarCores()"
+            />
+            <span>Fundo</span>
+          </div>
+          <div class="color-item">
+            <input
+              type="color"
+              id="corTexto"
+              value="#333333"
+              onchange="atualizarCores()"
+            />
+            <span>Texto</span>
+          </div>
+          <div class="color-item">
+            <input
+              type="color"
+              id="corBadge"
+              value="#1e293b"
+              onchange="atualizarCores()"
+            />
+            <span>Badge</span>
+          </div>
+        </div>
+
+        <label for="tipoGrafico">
+          Tipo de Gráfico
+          <span class="info-icon" title="Entenda a aplicação de cada gráfico"
+            >ℹ️</span
+          >
+        </label>
+        <select id="tipoGrafico" onchange="mudarDica()">
+          <option value="comparacao_oficial" selected>
+            Comparação Oficial (TMO FOR x REAL)
+          </option>
+          <option value="desvio_tmo">Desvio TMO (Linha + Tabela)</option>
+          <option value="dual_area">Comparativo em Área (Dual / TMO)</option>
+          <option value="ishikawa">Espinha de Peixe (Premium)</option>
+          <option value="pareto">Gráfico de Pareto (80/20)</option>
+          <option value="waterfall">Cascata (Waterfall)</option>
+          <option value="bar">Gráfico de Barras Padrão</option>
+          <option value="doughnut">Rosca (Composição)</option>
+          <option value="line">Linhas (Tendência / Intraday)</option>
+        </select>
+
+        <div id="infoGrafico" class="info-box"></div>
+
+        <label
+          class="checkbox-container"
+          id="checkMoedaWrapper"
+          style="display: none"
+        >
+          <input type="checkbox" id="isMoeda" onchange="renderizar()" />
+          <span style="font-size: 0.85rem; font-weight: 600; color: #475569"
+            >Formatar como Moeda (R$)</span
+          >
+        </label>
+
+        <label
+          for="dadosText"
+          style="
+            display: flex;
+            justify-content: space-between;
+            margin-top: 16px;
+          "
+        >
+          <span>Dados da Análise</span>
+          <button
+            type="button"
+            onclick="abrirModalExemplos()"
+            style="
+              width: auto;
+              margin: 0;
+              padding: 2px 10px;
+              font-size: 11px;
+              background: #e2e8f0;
+              color: #0f172a;
+            "
+          >
+            📄 Ver Exemplos
+          </button>
+        </label>
+        <textarea id="dadosText">
+Mês, TMO FOR, TMO REAL
+JANEIRO, 00:04:45, 00:04:28
+FEVEREIRO, 00:04:45, 00:04:55
+MARÇO, 00:04:40, 00:04:56
+ABRIL, 00:04:32, 00:04:48
+MAIO, 00:04:56, 00:05:25
+JUNHO, 00:05:43, 00:04:50
+JULHO, 00:04:56, 00:04:23
+AGOSTO, 00:05:04, 00:06:47</textarea
+        >
+        <div id="dicaTexto" class="hint">
+          Formato (3 col): <b>Mês, Série 1, Série 2</b>.<br />Valores em tempo
+          (ex: <b>00:04:45</b>).
+        </div>
+
+        <button id="btnGerar" class="btn-gerar" onclick="animarRenderizar()">
+          Atualizar Gráfico
+        </button>
+        <button class="btn-full" onclick="abrirTelaCheia()">
+          ⛶ Ver em Tela Cheia
+        </button>
+        <button id="btnBaixar" class="btn-baixar" onclick="baixarImagem()">
+          📥 Baixar Imagem HD
+        </button>
+      </div>
+
+      <div class="panel render-area" id="renderArea">
+        <div class="botoes-full" id="botoesFull">
+          <button
+            class="btn-full-action btn-baixar-full"
+            onclick="baixarImagem()"
+          >
+            📥 Baixar HD
+          </button>
+          <button
+            class="btn-full-action btn-fechar-full"
+            onclick="fecharTelaCheia()"
+          >
+            ✖ Fechar
+          </button>
+        </div>
+
+        <div id="chartContainer" class="chart-container">
+          <canvas id="chartCanvas"></canvas>
+        </div>
+
+        <div id="ishikawaBox" class="ishikawa-box">
+          <div class="ish-titulo">
+            <span id="ishTitulo">FISHBONE DIAGRAM</span>
+          </div>
+
+          <svg class="ish-svg-layer" viewBox="0 0 1200 850">
+            <path class="svg-fill" d="M 100 400 L 10 300 Q 40 400 10 500 Z" />
+            <line
+              class="svg-stroke"
+              x1="80"
+              y1="400"
+              x2="950"
+              y2="400"
+              stroke-width="4"
+              stroke-dasharray="12, 10"
+            />
+            <path
+              class="svg-fill"
+              d="M 900 180 Q 1060 190 1190 400 Q 1060 610 900 620 Q 990 400 900 180 Z"
+            />
+            <circle cx="1050" cy="350" r="14" fill="white" />
+            <circle cx="1050" cy="350" r="6" fill="#111" />
+
+            <polyline
+              class="svg-stroke"
+              fill="none"
+              points="340,400 240,180 170,180"
+              stroke-width="1.5"
+            />
+            <polyline
+              class="svg-stroke"
+              fill="none"
+              points="340,400 240,620 170,620"
+              stroke-width="1.5"
+            />
+            <polyline
+              class="svg-stroke"
+              fill="none"
+              points="630,400 530,180 460,180"
+              stroke-width="1.5"
+            />
+            <polyline
+              class="svg-stroke"
+              fill="none"
+              points="630,400 530,620 460,620"
+              stroke-width="1.5"
+            />
+            <polyline
+              class="svg-stroke"
+              fill="none"
+              points="920,400 820,180 750,180"
+              stroke-width="1.5"
+            />
+            <polyline
+              class="svg-stroke"
+              fill="none"
+              points="920,400 820,620 750,620"
+              stroke-width="1.5"
+            />
+          </svg>
+
+          <div
+            id="ishTextoCabeca"
+            style="
+              position: absolute;
+              top: 415px;
+              left: 1050px;
+              transform: translateX(-50%);
+              width: 180px;
+              text-align: center;
+              color: white;
+              font-weight: bold;
+              font-size: 15px;
+              z-index: 10;
+              line-height: 1.2;
+            "
+          ></div>
+
+          <div class="ish-node node-3">03</div>
+          <div class="ish-node node-2">02</div>
+          <div class="ish-node node-1">01</div>
+
+          <div id="ishCategoriasContainer"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- MODAL DE EXEMPLOS AMPLIADO -->
+    <div id="modalExemplos" class="modal-bg">
+      <div class="modal-card">
+        <h3 style="margin-top: 0; color: #0f172a">📄 Modelos de Dados</h3>
+        <p style="font-size: 13px; color: #64748b; margin-bottom: 20px">
+          Clique em <b>"Usar Exemplo"</b> para preencher a caixa de dados
+          automaticamente e renderizar o gráfico.
+        </p>
+
+        <div class="exemplo-block">
+          <div class="exemplo-header">
+            <strong>Comparação Oficial (TMO FOR x REAL)</strong>
+            <button
+              class="btn-usar-exemplo"
+              onclick="carregarDados('comparacao_oficial')"
+            >
+              Usar Exemplo
+            </button>
+          </div>
+          <pre id="ex-comparacao_oficial" class="exemplo-texto">
+Mês, TMO FOR, TMO REAL
+JANEIRO, 00:04:45, 00:04:28
+FEVEREIRO, 00:04:45, 00:04:55
+MARÇO, 00:04:40, 00:04:56
+ABRIL, 00:04:32, 00:04:48
+MAIO, 00:04:56, 00:05:25
+JUNHO, 00:05:43, 00:04:50
+JULHO, 00:04:56, 00:04:23
+AGOSTO, 00:05:04, 00:06:47</pre
+          >
+        </div>
+
+        <div class="exemplo-block">
+          <div class="exemplo-header">
+            <strong>Desvio TMO (Linha + Tabela)</strong>
+            <button
+              class="btn-usar-exemplo"
+              onclick="carregarDados('desvio_tmo')"
+            >
+              Usar Exemplo
+            </button>
+          </div>
+          <pre id="ex-desvio_tmo" class="exemplo-texto">
+Mês, Realizado, Meta, Desvio %
+JAN, 00:04:28, 00:04:45, -5.96
+FEV, 00:04:55, 00:04:45, 3.51
+MAR, 00:04:56, 00:04:40, 5.71
+ABR, 00:04:48, 00:04:32, 5.88
+MAI, 00:05:26, 00:04:56, 10.14
+JUN, 00:04:50, 00:05:43, -15.45
+JUL, 00:04:23, 00:04:56, -11.15
+AGO, 00:05:06, 00:04:53, 4.44</pre
+          >
+        </div>
+
+        <div class="exemplo-block">
+          <div class="exemplo-header">
+            <strong>Comparativo de Área (TMO Call Center)</strong>
+            <button
+              class="btn-usar-exemplo"
+              onclick="carregarDados('dual_area')"
+            >
+              Usar Exemplo
+            </button>
+          </div>
+          <pre id="ex-dual_area" class="exemplo-texto">
+Mês, Equipe Interna (N1), Terceirizada (N2)
+01/2026, 149, 274
+02/2026, 143, 279
+03/2026, 226, 283
+04/2026, 238, 217
+05/2026, 171, 436
+06/2026, 234, 336
+07/2026, 264, 554
+08/2026, 159, 267</pre
+          >
+        </div>
+
+        <div class="exemplo-block">
+          <div class="exemplo-header">
+            <strong>Espinha de Peixe (Ishikawa)</strong>
+            <button
+              class="btn-usar-exemplo"
+              onclick="carregarDados('ishikawa')"
+            >
+              Usar Exemplo
+            </button>
+          </div>
+          <pre id="ex-ishikawa" class="exemplo-texto">
+Problema: Divergência de Estoque no CD
+Máquina: Leitor falhando, WMS com lentidão, Wi-Fi caindo
+Método: Contagem cíclica atrasada, Falta de auditoria dupla
+Mão de Obra: Operadores novatos, Desatenção no picking
+Material: Etiquetas apagadas, Caixas despadronizadas
+Meio Ambiente: Corredores escuros, Excesso de calor
+Medição: Falta de KPI de acuracidade, Inventário impreciso</pre
+          >
+        </div>
+
+        <div class="exemplo-block">
+          <div class="exemplo-header">
+            <strong>Pareto (80/20) ou Barras</strong>
+            <button class="btn-usar-exemplo" onclick="carregarDados('pareto')">
+              Usar Exemplo
+            </button>
+          </div>
+          <pre id="ex-pareto" class="exemplo-texto">
+Avaria no transporte, 145
+Cliente ausente, 82
+Pedido duplicado, 45
+Endereço não localizado, 28
+Falta de espaço no cliente, 15
+Produto vencido, 10
+Erro de faturamento, 5</pre
+          >
+        </div>
+
+        <div class="exemplo-block">
+          <div class="exemplo-header">
+            <strong>Cascata (Waterfall)</strong>
+            <button
+              class="btn-usar-exemplo"
+              onclick="carregarDados('waterfall')"
+            >
+              Usar Exemplo
+            </button>
+          </div>
+          <pre id="ex-waterfall" class="exemplo-texto">
+Faturamento Bruto, 150000
+Devoluções, -12500
+Impostos, -22000
+Ganhos com Roteirização, 8400
+Avarias no CD, -3100
+Multas de Atraso, -1500</pre
+          >
+        </div>
+
+        <button
+          onclick="fecharModalExemplos()"
+          style="background: #ef4444; margin-top: 10px"
+        >
+          ✖ Fechar Aba
+        </button>
+      </div>
+    </div>
+
+    <script>
+      Chart.register(ChartDataLabels);
+      let chartApp = null;
+
+      const descricoes = {
+        comparacao_oficial:
+          "<strong>🎯 Situação:</strong> Comparação Oficial de TMO.<br><strong>📖 Leitura:</strong> Monitoramento de duas métricas de tempo (Previsto vs Realizado). Gráfico com linhas suaves, marcadores vazados e legendas flutuantes inteligentes que nunca se sobrepõem.",
+        desvio_tmo:
+          "<strong>🎯 Situação:</strong> Acompanhamento de Desvio com Tabela Base.<br><strong>📖 Leitura:</strong> A linha exibe o percentual de desvio (positivo ou negativo) enquanto o eixo X funciona como uma tabela de dados exibindo o Realizado, a Meta e o Mês empilhados.",
+        dual_area:
+          "<strong>🎯 Situação:</strong> Comparação de Duas Séries Temporais.<br><strong>📖 Leitura:</strong> Monitore a evolução de duas métricas ao longo dos meses. A sobreposição das áreas coloridas facilita a visualização do volume e do distanciamento.",
+        ishikawa:
+          "<strong>🎯 Situação:</strong> Descoberta de Causa-Raiz.<br><strong>📖 Leitura:</strong> O problema fica na 'cabeça'. As espinhas categorizam as causas menores e destrincham o gargalo.",
+        pareto:
+          "<strong>🎯 Situação:</strong> Priorização Operacional.<br><strong>📖 Leitura:</strong> A linha vermelha mostra o % acumulado. Foque sempre em resolver as barras que formam os primeiros 80%.",
+        waterfall:
+          "<strong>🎯 Situação:</strong> Entendimento de Variações.<br><strong>📖 Leitura:</strong> A primeira e última barra são os totais. Barras verdes somam (ganhos), barras vermelhas subtraem (perdas).",
+        bar: "<strong>🎯 Situação:</strong> Comparação Absoluta.<br><strong>📖 Leitura:</strong> Usado para analisar a diferença crua de volumes entre filiais, produtos ou turnos.",
+        doughnut:
+          "<strong>🎯 Situação:</strong> Visão de Composição (Partes de um Todo).<br><strong>📖 Leitura:</strong> Mostra a fatia exata que cada categoria representa do montante global consolidado.",
+        line: "<strong>🎯 Situação:</strong> Acompanhamento de Tendência/Intraday.<br><strong>📖 Leitura:</strong> Avalie a linha do tempo (horas ou dias) para identificar anomalias, picos ou quedas sequenciais.",
+      };
+
+      // Funções Auxiliares de Tempo para a Comparação Oficial
+      function parseTime(timeStr) {
+        const parts = timeStr.trim().split(":");
+        let secs = 0;
+        if (parts.length === 3) {
+          secs = +parts[0] * 3600 + +parts[1] * 60 + +parts[2];
+        } else if (parts.length === 2) {
+          secs = +parts[0] * 60 + +parts[1];
+        } else {
+          secs = parseFloat(timeStr.replace(/[^\d.-]/g, ""));
+        }
+        return isNaN(secs) ? 0 : secs;
+      }
+
+      function formatTime(secs) {
+        const h = Math.floor(secs / 3600)
+          .toString()
+          .padStart(2, "0");
+        const m = Math.floor((secs % 3600) / 60)
+          .toString()
+          .padStart(2, "0");
+        const s = Math.floor(secs % 60)
+          .toString()
+          .padStart(2, "0");
+        return `${h}:${m}:${s}`;
+      }
+
+      // Modal de Exemplos
+      function abrirModalExemplos() {
+        document.getElementById("modalExemplos").style.display = "flex";
+      }
+      function fecharModalExemplos() {
+        document.getElementById("modalExemplos").style.display = "none";
+      }
+
+      function carregarDados(tipo) {
+        const texto = document.getElementById("ex-" + tipo).innerText;
+        document.getElementById("dadosText").value = texto;
+        document.getElementById("tipoGrafico").value = tipo;
+
+        if (tipo === "waterfall") {
+          document.getElementById("titulo").value =
+            "RESULTADO FINANCEIRO DO MÊS";
+          document.getElementById("isMoeda").checked = true;
+        } else if (tipo === "pareto") {
+          document.getElementById("titulo").value =
+            "MOTIVOS DE DEVOLUÇÃO (TOP OFFENDERS)";
+          document.getElementById("isMoeda").checked = false;
+        } else if (tipo === "doughnut") {
+          document.getElementById("titulo").value =
+            "DISTRIBUIÇÃO DE CUSTOS OPERACIONAIS";
+          document.getElementById("isMoeda").checked = true;
+        } else if (tipo === "line") {
+          document.getElementById("titulo").value =
+            "VOLUME DE EXPEDIÇÃO INTRADAY";
+          document.getElementById("isMoeda").checked = false;
+        } else if (tipo === "dual_area") {
+          document.getElementById("titulo").value =
+            "EVOLUÇÃO DO TMO (CALL CENTER) - 2026";
+          document.getElementById("isMoeda").checked = false;
+          document.getElementById("corPeixe").value = "#10b981";
+        } else if (tipo === "desvio_tmo") {
+          document.getElementById("titulo").value = "Desvio TMO";
+          document.getElementById("isMoeda").checked = false;
+          document.getElementById("corPeixe").value = "#1e293b";
+        } else if (tipo === "comparacao_oficial") {
+          document.getElementById("titulo").value =
+            "COMPARAÇÃO OFICIAL (TMO FOR vs REAL)";
+          document.getElementById("isMoeda").checked = false;
+          document.getElementById("corPeixe").value = "#f97316"; // Laranja exato da imagem
+          document.getElementById("corFundo").value = "#ffffff";
+        } else {
+          document.getElementById("titulo").value = "ANÁLISE DE CAUSA RAIZ";
+          document.getElementById("isMoeda").checked = false;
+        }
+
+        fecharModalExemplos();
+        mudarDica();
+        atualizarCores();
+        renderizar();
+      }
+
+      function mudarDica() {
+        const tipo = document.getElementById("tipoGrafico").value;
+        const dica = document.getElementById("dicaTexto");
+        const info = document.getElementById("infoGrafico");
+        const checkMoeda = document.getElementById("checkMoedaWrapper");
+
+        info.style.display = "block";
+        info.innerHTML = descricoes[tipo];
+
+        if (tipo === "ishikawa") {
+          dica.innerHTML =
+            "Formato: <b>Problema: Título</b> na 1ª linha.<br>Nas outras: <b>Categoria: Causa 1, Causa 2</b>.";
+          checkMoeda.style.display = "none";
+        } else if (tipo === "dual_area" || tipo === "comparacao_oficial") {
+          dica.innerHTML =
+            "Formato (3 col): <b>Mês, Série 1, Série 2</b> na 1ª linha.<br>Valores em tempo (ex: <b>00:04:45</b>) ou decimais.";
+          checkMoeda.style.display = "none";
+        } else if (tipo === "desvio_tmo") {
+          dica.innerHTML =
+            "Formato (4 col): <b>Mês, Realizado, Meta, Desvio %</b> na 1ª linha.<br>Nas seguintes: <b>JAN, 00:04:28, 00:04:45, -5.96</b>.";
+          checkMoeda.style.display = "none";
+        } else {
+          dica.innerHTML =
+            "Formato: <b>Categoria</b> <i>[Tab/Vírgula]</i> <b>Valor Numérico</b>. (Cole do Excel)";
+          checkMoeda.style.display = "flex";
+        }
+      }
+
+      function atualizarCores() {
+        const main = document.getElementById("corPeixe").value;
+        const bg = document.getElementById("corFundo").value;
+        const txt = document.getElementById("corTexto").value;
+
+        document.documentElement.style.setProperty("--ish-blue", main);
+        document.documentElement.style.setProperty("--ish-bg", bg);
+        document.documentElement.style.setProperty("--ish-text", txt);
+
+        if (document.getElementById("tipoGrafico").value !== "ishikawa") {
+          renderizar();
+        }
+      }
+
+      function formatarValor(val) {
+        const isMoeda = document.getElementById("isMoeda").checked;
+        if (isMoeda) {
+          return val.toLocaleString("pt-BR", {
+            style: "currency",
+            currency: "BRL",
+          });
+        }
+        return val.toLocaleString("pt-BR");
+      }
+
+      function abrirTelaCheia() {
+        const area = document.getElementById("renderArea");
+        if (area.requestFullscreen) {
+          area.requestFullscreen();
+        } else if (area.webkitRequestFullscreen) {
+          area.webkitRequestFullscreen();
+        } else if (area.msRequestFullscreen) {
+          area.msRequestFullscreen();
+        }
+      }
+
+      function fecharTelaCheia() {
+        if (document.exitFullscreen) {
+          document.exitFullscreen();
+        } else if (document.webkitExitFullscreen) {
+          document.webkitExitFullscreen();
+        } else if (document.msExitFullscreen) {
+          document.msExitFullscreen();
+        }
+      }
+
+      function animarRenderizar() {
+        const btn = document.getElementById("btnGerar");
+        const textoOriginal = btn.innerHTML;
+        btn.innerHTML = "⏳ Atualizando...";
+        btn.disabled = true;
+
+        setTimeout(() => {
+          renderizar();
+          btn.innerHTML = textoOriginal;
+          btn.disabled = false;
+        }, 500);
+      }
+
+      function renderizar() {
+        const tipo = document.getElementById("tipoGrafico").value;
+        const titulo = document.getElementById("titulo").value;
+
+        if (tipo === "ishikawa") {
+          document.getElementById("chartContainer").style.display = "none";
+          document.getElementById("ishikawaBox").style.display = "block";
+          montarIshikawaHTML(titulo);
+        } else {
+          document.getElementById("ishikawaBox").style.display = "none";
+          document.getElementById("chartContainer").style.display = "block";
+          montarChartJS(tipo, titulo);
+        }
+      }
+
+      function montarChartJS(tipo, titulo) {
+        const canvas = document.getElementById("chartCanvas");
+        const ctx = canvas.getContext("2d");
+        if (chartApp) chartApp.destroy();
+
+        const corPrincipal = document.getElementById("corPeixe").value;
+        const corTexto = document.getElementById("corTexto").value;
+        const corBadge = document.getElementById("corBadge").value;
+        const texto = document.getElementById("dadosText").value.trim();
+        const dados = [];
+
+        // Ignoramos o parse base se for gráfico complexo (multi-colunas)
+        if (
+          tipo !== "dual_area" &&
+          tipo !== "desvio_tmo" &&
+          tipo !== "comparacao_oficial"
+        ) {
+          texto.split("\n").forEach((l) => {
+            const p = l.split(/\t|,|;/);
+            if (p.length >= 2) {
+              const v = parseFloat(p[1].replace(/[^\d.-]/g, ""));
+              if (!isNaN(v)) dados.push({ r: p[0].trim(), v: v });
+            }
+          });
+          if (dados.length === 0) return;
+        }
+
+        Chart.defaults.font.family = "'Segoe UI', sans-serif";
+        Chart.defaults.color = corTexto;
+
+        const configEixoY = {
+          ticks: {
+            callback: function (value) {
+              return formatarValor(value);
+            },
+          },
+        };
+
+        const baseOptions = {
+          responsive: true,
+          maintainAspectRatio: false,
+          devicePixelRatio: 3,
+          layout: { padding: { top: 40, bottom: 20 } },
+          scales: { y: configEixoY, x: { grid: { display: false } } },
+          plugins: {
+            title: {
+              display: true,
+              text: titulo,
+              font: { size: 22, weight: "bold" },
+              padding: 20,
+            },
+            legend: { display: false },
+            datalabels: {
+              color: "#ffffff",
+              backgroundColor: corBadge,
+              borderRadius: 6,
+              padding: { top: 6, bottom: 6, left: 10, right: 10 },
+              anchor: "center",
+              align: "center",
+              font: { weight: "bold", size: 14 },
+              formatter: (val) => formatarValor(val),
+            },
+          },
+        };
+
+        // --- GRÁFICO NOVO: COMPARAÇÃO OFICIAL ---
+        if (tipo === "comparacao_oficial") {
+          const linhas = texto.split("\n").filter((l) => l.trim() !== "");
+          if (linhas.length < 2) return;
+
+          const cabecalho = linhas[0].split(/,|\t|;/).map((c) => c.trim());
+          const rotulo1 = cabecalho[1] || "TMO FOR";
+          const rotulo2 = cabecalho[2] || "TMO REAL";
+
+          const labelsX = [];
+          const data1 = [];
+          const data2 = [];
+
+          for (let i = 1; i < linhas.length; i++) {
+            const p = linhas[i].split(/,|\t|;/);
+            if (p.length >= 3) {
+              labelsX.push(p[0].trim());
+              data1.push(parseTime(p[1])); // Converte para segundos
+              data2.push(parseTime(p[2])); // Converte para segundos
+            }
+          }
+
+          const corCinza = "#707070";
+
+          chartApp = new Chart(ctx, {
+            type: "line",
+            data: {
+              labels: labelsX,
+              datasets: [
+                {
+                  label: rotulo1,
+                  data: data1,
+                  borderColor: corCinza,
+                  backgroundColor: "#ffffff",
+                  fill: false,
+                  tension: 0.35,
+                  borderWidth: 2,
+                  pointRadius: 5,
+                  pointHoverRadius: 7,
+                  pointBorderWidth: 2,
+                  datalabels: {
+                    // Lógica Inteligente: Se For >= Real, fica no topo. Se for < Real, fica embaixo.
+                    align: (context) => {
+                      const v1 = context.dataset.data[context.dataIndex];
+                      const v2 =
+                        context.chart.data.datasets[1].data[context.dataIndex];
+                      return v1 >= v2 ? "top" : "bottom";
+                    },
+                    anchor: "center",
+                    offset: 8,
+                    backgroundColor: "#ffffff",
+                    borderColor: "#a3a3a3",
+                    borderWidth: 1,
+                    borderRadius: 4,
+                    padding: { top: 4, bottom: 4, left: 8, right: 8 },
+                    color: "#1f2937",
+                    font: { size: 11, weight: "bold" },
+                  },
+                },
+                {
+                  label: rotulo2,
+                  data: data2,
+                  borderColor: corPrincipal,
+                  backgroundColor: "#ffffff",
+                  fill: false,
+                  tension: 0.35,
+                  borderWidth: 2,
+                  pointRadius: 5,
+                  pointHoverRadius: 7,
+                  pointBorderWidth: 2,
+                  datalabels: {
+                    // Lógica Inteligente (Inversa)
+                    align: (context) => {
+                      const v2 = context.dataset.data[context.dataIndex];
+                      const v1 =
+                        context.chart.data.datasets[0].data[context.dataIndex];
+                      return v2 >= v1 ? "top" : "bottom";
+                    },
+                    anchor: "center",
+                    offset: 8,
+                    backgroundColor: "#ffffff",
+                    borderColor: "#a3a3a3",
+                    borderWidth: 1,
+                    borderRadius: 4,
+                    padding: { top: 4, bottom: 4, left: 8, right: 8 },
+                    color: "#1f2937",
+                    font: { size: 11, weight: "bold" },
+                  },
+                },
+              ],
+            },
+            options: {
+              ...baseOptions,
+              layout: { padding: { top: 80, bottom: 40, left: 20, right: 20 } },
+              scales: {
+                y: {
+                  display: false,
+                  min: Math.min(...data1, ...data2) * 0.9,
+                  max: Math.max(...data1, ...data2) * 1.1,
+                },
+                x: {
+                  offset: true, // <--- A MÁGICA ESTÁ AQUI: Descola o Janeiro e o Agosto das bordas
+                  grid: {
+                    display: true,
+                    drawBorder: true,
+                    color: "#e5e7eb",
+                    drawOnChartArea: false,
+                    tickLength: 10,
+                  },
+                  ticks: {
+                    font: { size: 11, weight: "600" },
+                    color: "#4b5563",
+                  },
+                },
+              },
+              plugins: {
+                ...baseOptions.plugins,
+                legend: {
+                  display: true,
+                  position: "bottom",
+                  labels: {
+                    font: { size: 12, weight: "bold" },
+                    usePointStyle: true,
+                    pointStyle: "circle",
+                  },
+                },
+                datalabels: {
+                  formatter: (val) => formatTime(val),
+                },
+              },
+            },
+          });
+        } else if (tipo === "desvio_tmo") {
+          const linhas = texto.split("\n").filter((l) => l.trim() !== "");
+          if (linhas.length < 2) return;
+
+          const labelsX = [];
+          const dataDesvio = [];
+
+          for (let i = 1; i < linhas.length; i++) {
+            const p = linhas[i].split(/,|\t|;/);
+            if (p.length >= 4) {
+              const mes = p[0].trim();
+              const realizado = p[1].trim();
+              const meta = p[2].trim();
+              labelsX.push([realizado, meta, mes]);
+              let desvioStr = p[3].trim().replace(",", ".");
+              dataDesvio.push(parseFloat(desvioStr.replace(/[^\d.-]/g, "")));
+            }
+          }
+
+          chartApp = new Chart(ctx, {
+            type: "line",
+            data: {
+              labels: labelsX,
+              datasets: [
+                {
+                  label: "Desvio %",
+                  data: dataDesvio,
+                  borderColor: corPrincipal,
+                  backgroundColor: corPrincipal,
+                  fill: false,
+                  tension: 0,
+                  borderWidth: 3,
+                  pointRadius: 4,
+                  pointHoverRadius: 6,
+                },
+              ],
+            },
+            options: {
+              ...baseOptions,
+              layout: { padding: { top: 60, bottom: 20, left: 10, right: 10 } },
+              scales: {
+                y: {
+                  grid: { color: "#e2e8f0" },
+                  ticks: { callback: (val) => val + "%" },
+                },
+                x: {
+                  grid: {
+                    display: true,
+                    drawOnChartArea: false,
+                    tickLength: 10,
+                    color: "#cbd5e1",
+                  },
+                  ticks: {
+                    font: { size: 12, weight: "bold" },
+                    color: "#475569",
+                  },
+                },
+              },
+              plugins: {
+                ...baseOptions.plugins,
+                datalabels: {
+                  ...baseOptions.plugins.datalabels,
+                  backgroundColor: "transparent",
+                  color: corTexto,
+                  font: { weight: "bold", size: 13 },
+                  align: (context) =>
+                    context.dataset.data[context.dataIndex] < 0
+                      ? "bottom"
+                      : "top",
+                  offset: 8,
+                  formatter: (val) => val + "%",
+                },
+              },
+            },
+          });
+        } else if (tipo === "dual_area") {
+          const linhas = texto.split("\n").filter((l) => l.trim() !== "");
+          if (linhas.length < 2) return;
+
+          const cabecalho = linhas[0].split(/,|\t|;/).map((c) => c.trim());
+          const labelsX = [],
+            data1 = [],
+            data2 = [];
+
+          for (let i = 1; i < linhas.length; i++) {
+            const p = linhas[i].split(/,|\t|;/);
+            if (p.length >= 3) {
+              labelsX.push(p[0].trim());
+              data1.push(parseFloat(p[1].replace(/[^\d.-]/g, "")));
+              data2.push(parseFloat(p[2].replace(/[^\d.-]/g, "")));
+            }
+          }
+
+          chartApp = new Chart(ctx, {
+            type: "line",
+            data: {
+              labels: labelsX,
+              datasets: [
+                {
+                  label: cabecalho[1] || "Série 1",
+                  data: data1,
+                  borderColor: corPrincipal,
+                  backgroundColor: corPrincipal + "33",
+                  fill: true,
+                  tension: 0.4,
+                  borderWidth: 3,
+                  pointRadius: 4,
+                },
+                {
+                  label: cabecalho[2] || "Série 2",
+                  data: data2,
+                  borderColor: "#f59e0b",
+                  backgroundColor: "#f59e0b33",
+                  fill: true,
+                  tension: 0.4,
+                  borderWidth: 3,
+                  pointRadius: 4,
+                },
+              ],
+            },
+            options: {
+              ...baseOptions,
+              plugins: {
+                ...baseOptions.plugins,
+                legend: {
+                  display: true,
+                  position: "top",
+                  labels: { font: { size: 14, weight: "bold" } },
+                },
+                datalabels: {
+                  ...baseOptions.plugins.datalabels,
+                  backgroundColor: "transparent",
+                  color: corTexto,
+                  anchor: "end",
+                  align: "top",
+                  offset: 4,
+                  font: { weight: "bold", size: 12 },
+                  formatter: (val) =>
+                    document.getElementById("isMoeda").checked
+                      ? formatarValor(val)
+                      : formatarValor(val) + "s",
+                },
+              },
+            },
+          });
+        } else if (tipo === "pareto") {
+          dados.sort((a, b) => b.v - a.v);
+          const total = dados.reduce((sum, d) => sum + d.v, 0);
+          let acumulo = 0;
+          const pct = dados.map((d) => {
+            acumulo += d.v;
+            return ((acumulo / total) * 100).toFixed(1);
+          });
+
+          chartApp = new Chart(ctx, {
+            type: "bar",
+            data: {
+              labels: dados.map((d) => d.r),
+              datasets: [
+                {
+                  label: "Ocorrências",
+                  data: dados.map((d) => d.v),
+                  backgroundColor: corPrincipal,
+                  yAxisID: "y",
+                },
+                {
+                  label: "% Acumulado",
+                  data: pct,
+                  type: "line",
+                  borderColor: "#ef4444",
+                  backgroundColor: "#ef4444",
+                  yAxisID: "y1",
+                  borderWidth: 3,
+                  datalabels: {
+                    color: "#ffffff",
+                    backgroundColor: "#ef4444",
+                    anchor: "end",
+                    align: "end",
+                    offset: 6,
+                    formatter: (val) => val + "%",
+                  },
+                },
+              ],
+            },
+            options: {
+              ...baseOptions,
+              scales: {
+                y: configEixoY,
+                y1: { type: "linear", position: "right", max: 100, min: 0 },
+              },
+            },
+          });
+        } else if (tipo === "waterfall") {
+          let currentVal = 0;
+          const wData = [],
+            bgColors = [],
+            rotulos = [];
+
+          dados.forEach((d, i) => {
+            rotulos.push(d.r);
+            wData.push([currentVal, currentVal + d.v]);
+            if (i === 0) bgColors.push(corPrincipal);
+            else if (d.v >= 0) bgColors.push("#10b981");
+            else bgColors.push("#ef4444");
+            currentVal += d.v;
+          });
+          rotulos.push("Resultado Final");
+          wData.push([0, currentVal]);
+          bgColors.push(corPrincipal);
+
+          chartApp = new Chart(ctx, {
+            type: "bar",
+            data: {
+              labels: rotulos,
+              datasets: [{ data: wData, backgroundColor: bgColors }],
+            },
+            options: {
+              ...baseOptions,
+              plugins: {
+                ...baseOptions.plugins,
+                datalabels: {
+                  ...baseOptions.plugins.datalabels,
+                  formatter: (val) => formatarValor(Math.abs(val[1] - val[0])),
+                },
+              },
+            },
+          });
+        } else if (tipo === "doughnut") {
+          const pieColors = [
+            corPrincipal,
+            "#10b981",
+            "#f59e0b",
+            "#ef4444",
+            "#8b5cf6",
+            "#64748b",
+            "#06b6d4",
+            "#f97316",
+          ];
+          chartApp = new Chart(ctx, {
+            type: "doughnut",
+            data: {
+              labels: dados.map((d) => d.r),
+              datasets: [
+                {
+                  data: dados.map((d) => d.v),
+                  backgroundColor: pieColors,
+                  borderWidth: 2,
+                  borderColor: document.getElementById("corFundo").value,
+                },
+              ],
+            },
+            options: {
+              ...baseOptions,
+              scales: {},
+              plugins: {
+                ...baseOptions.plugins,
+                legend: {
+                  display: true,
+                  position: "right",
+                  labels: { font: { size: 14 } },
+                },
+                datalabels: {
+                  ...baseOptions.plugins.datalabels,
+                  anchor: "center",
+                  align: "center",
+                },
+              },
+            },
+          });
+        } else if (tipo === "line") {
+          chartApp = new Chart(ctx, {
+            type: "line",
+            data: {
+              labels: dados.map((d) => d.r),
+              datasets: [
+                {
+                  label: "Evolução",
+                  data: dados.map((d) => d.v),
+                  borderColor: corPrincipal,
+                  backgroundColor: corPrincipal,
+                  borderWidth: 3,
+                  pointRadius: 5,
+                  tension: 0.3,
+                },
+              ],
+            },
+            options: {
+              ...baseOptions,
+              plugins: {
+                ...baseOptions.plugins,
+                datalabels: {
+                  ...baseOptions.plugins.datalabels,
+                  anchor: "end",
+                  align: "top",
+                  offset: 8,
+                },
+              },
+            },
+          });
+        } else {
+          chartApp = new Chart(ctx, {
+            type: "bar",
+            data: {
+              labels: dados.map((d) => d.r),
+              datasets: [
+                { data: dados.map((d) => d.v), backgroundColor: corPrincipal },
+              ],
+            },
+            options: baseOptions,
+          });
+        }
+      }
+
+      function montarIshikawaHTML(titulo) {
+        document.getElementById("ishTitulo").innerText = titulo;
+        const texto = document.getElementById("dadosText").value.trim();
+        let problema = "Problema";
+        const categorias = [];
+
+        texto.split("\n").forEach((linha) => {
+          if (!linha.includes(":")) return;
+          const [chave, valor] = linha.split(":");
+          if (chave.trim().toLowerCase() === "problema") {
+            problema = valor.trim();
+          } else {
+            categorias.push({
+              nome: chave.trim(),
+              causas: valor.split(",").map((c) => c.trim()),
+            });
+          }
+        });
+
+        document.getElementById("ishTextoCabeca").innerText = problema;
+        const container = document.getElementById("ishCategoriasContainer");
+        container.innerHTML = "";
+
+        const posicoes = [
+          { top: "165px", right: "380px", type: "cat-top" },
+          { top: "165px", right: "670px", type: "cat-top" },
+          { top: "165px", right: "960px", type: "cat-top" },
+          { bottom: "215px", right: "380px", type: "cat-bottom" },
+          { bottom: "215px", right: "670px", type: "cat-bottom" },
+          { bottom: "215px", right: "960px", type: "cat-bottom" },
+        ];
+
+        categorias.forEach((cat, index) => {
+          if (index >= 6) return;
+          const pos = posicoes[index];
+          const div = document.createElement("div");
+          div.className = `ish-categoria ${pos.type}`;
+
+          if (pos.top) div.style.top = pos.top;
+          if (pos.bottom) div.style.bottom = pos.bottom;
+          div.style.right = pos.right;
+
+          let htmlCausas = "";
+          cat.causas.forEach((causa) => {
+            if (causa)
+              htmlCausas += `<div class="ish-causa-item">${causa}</div>`;
+          });
+
+          div.innerHTML = `<div class="ish-pilula">${cat.nome}</div><div class="ish-causas-lista">${htmlCausas}</div>`;
+          container.appendChild(div);
+        });
+      }
+
+      function baixarImagem() {
+        const tipo = document.getElementById("tipoGrafico").value;
+        const btn = document.getElementById("btnBaixar");
+        const nomeArquivo =
+          document.getElementById("titulo").value.replace(/\s+/g, "_") + ".png";
+        const corFundo = document.getElementById("corFundo").value;
+
+        const textoOriginal = btn.innerHTML;
+        btn.innerHTML = "⏳ Gerando...";
+        btn.disabled = true;
+
+        const botoesFull = document.getElementById("botoesFull");
+        const displayOriginal = botoesFull.style.display;
+        botoesFull.style.display = "none";
+
+        setTimeout(() => {
+          if (tipo === "ishikawa") {
+            const box = document.getElementById("ishikawaBox");
+            html2canvas(box, {
+              scale: 3,
+              backgroundColor: corFundo,
+              logging: false,
+            })
+              .then((canvasTarget) => {
+                const link = document.createElement("a");
+                link.download = nomeArquivo;
+                link.href = canvasTarget.toDataURL("image/png", 1.0);
+                link.click();
+              })
+              .finally(() => {
+                btn.innerHTML = textoOriginal;
+                btn.disabled = false;
+                botoesFull.style.display = displayOriginal;
+              });
+          } else {
+            const canvas = document.getElementById("chartCanvas");
+            const tempCanvas = document.createElement("canvas");
+            tempCanvas.width = canvas.width;
+            tempCanvas.height = canvas.height;
+            const tCtx = tempCanvas.getContext("2d");
+            tCtx.fillStyle = corFundo;
+            tCtx.fillRect(0, 0, tempCanvas.width, tempCanvas.height);
+            tCtx.drawImage(canvas, 0, 0);
+
+            const link = document.createElement("a");
+            link.download = nomeArquivo;
+            link.href = tempCanvas.toDataURL("image/png", 1.0);
+            link.click();
+
+            btn.innerHTML = textoOriginal;
+            btn.disabled = false;
+            botoesFull.style.display = displayOriginal;
+          }
+        }, 1200);
+      }
+
+      window.onload = () => {
+        document.getElementById("titulo").value =
+          "COMPARAÇÃO OFICIAL (TMO FOR vs REAL)";
+        document.getElementById("corPeixe").value = "#f97316";
+        document.getElementById("corFundo").value = "#ffffff";
+        mudarDica();
+        atualizarCores();
+        renderizar();
+      };
+    </script>
+  </body>
+</html>
