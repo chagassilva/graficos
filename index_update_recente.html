@@ -90,8 +90,8 @@
 
       .color-grid {
         display: grid;
-        grid-template-columns: repeat(4, 1fr);
-        gap: 8px;
+        grid-template-columns: repeat(5, 1fr);
+        gap: 6px;
         margin-bottom: 12px;
       }
       .color-item {
@@ -119,19 +119,13 @@
         border-radius: 4px;
       }
 
-      .opcoes-container {
-        display: flex;
-        flex-direction: column;
-        gap: 10px;
-        margin-top: 12px;
-        margin-bottom: 8px;
-      }
       .checkbox-container {
         display: flex;
         align-items: center;
         gap: 8px;
+        margin-top: 10px;
+        margin-bottom: 5px;
         cursor: pointer;
-        margin: 0;
       }
       .checkbox-container input {
         width: 16px;
@@ -227,10 +221,11 @@
         display: flex;
       }
 
+      /* Aumentado de 950px para 1200px para dar mais espaço às barras */
       .chart-container {
         width: 100%;
-        max-width: 1100px;
-        height: 550px;
+        max-width: 1200px;
+        height: 600px;
         display: none;
         background: #ffffff;
         padding: 20px;
@@ -312,6 +307,7 @@
         overflow: hidden;
         flex-shrink: 0;
       }
+
       .ish-titulo {
         text-align: center;
         font-size: 26px;
@@ -341,6 +337,7 @@
       .svg-stroke {
         stroke: var(--ish-blue);
       }
+
       .ish-node {
         position: absolute;
         width: 50px;
@@ -366,6 +363,7 @@
       .node-3 {
         left: 315px;
       }
+
       .ish-categoria {
         position: absolute;
         width: 240px;
@@ -381,6 +379,7 @@
         flex-direction: column-reverse;
         justify-content: flex-start;
       }
+
       .ish-pilula {
         background: var(--ish-blue);
         color: white;
@@ -432,7 +431,7 @@
         <input
           type="text"
           id="titulo"
-          value="ACOMPANHAMENTO DE RESULTADOS (TLD DISTRIBUIDORA)"
+          value="COMPARAÇÃO OFICIAL (TMO FOR vs REAL)"
         />
 
         <label>Personalização de Cores</label>
@@ -441,25 +440,19 @@
             <input
               type="color"
               id="corPeixe"
-              value="#3b82f6"
+              value="#f97316"
               onchange="atualizarCores()"
-            /><span>Principal</span>
+            />
+            <span>Principal</span>
           </div>
           <div class="color-item">
             <input
               type="color"
               id="corSecundaria"
-              value="#94a3b8"
+              value="#707070"
               onchange="atualizarCores()"
-            /><span>Secundária</span>
-          </div>
-          <div class="color-item">
-            <input
-              type="color"
-              id="corDestaque"
-              value="#ef4444"
-              onchange="atualizarCores()"
-            /><span>Destaque</span>
+            />
+            <span>Secundária</span>
           </div>
           <div class="color-item">
             <input
@@ -467,16 +460,17 @@
               id="corFundo"
               value="#ffffff"
               onchange="atualizarCores()"
-            /><span>Fundo</span>
+            />
+            <span>Fundo</span>
           </div>
-
           <div class="color-item">
             <input
               type="color"
               id="corTexto"
               value="#333333"
               onchange="atualizarCores()"
-            /><span>Texto</span>
+            />
+            <span>Texto</span>
           </div>
           <div class="color-item">
             <input
@@ -484,23 +478,8 @@
               id="corBadge"
               value="#1e293b"
               onchange="atualizarCores()"
-            /><span>Badge 1</span>
-          </div>
-          <div class="color-item">
-            <input
-              type="color"
-              id="corBadge2"
-              value="#64748b"
-              onchange="atualizarCores()"
-            /><span>Badge 2</span>
-          </div>
-          <div class="color-item">
-            <input
-              type="color"
-              id="corBadge3"
-              value="#ef4444"
-              onchange="atualizarCores()"
-            /><span>Badge 3</span>
+            />
+            <span>Badge</span>
           </div>
         </div>
 
@@ -529,30 +508,16 @@
 
         <div id="infoGrafico" class="info-box"></div>
 
-        <div class="opcoes-container">
-          <label
-            class="checkbox-container"
-            id="checkMoedaWrapper"
-            style="display: none"
+        <label
+          class="checkbox-container"
+          id="checkMoedaWrapper"
+          style="display: none"
+        >
+          <input type="checkbox" id="isMoeda" onchange="renderizar()" checked />
+          <span style="font-size: 0.85rem; font-weight: 600; color: #475569"
+            >Formatar como Moeda (R$)</span
           >
-            <input
-              type="checkbox"
-              id="isMoeda"
-              onchange="renderizar()"
-              checked
-            />
-            <span style="font-size: 0.85rem; font-weight: 600; color: #475569"
-              >Formatar como Moeda (R$)</span
-            >
-          </label>
-
-          <label class="checkbox-container" id="checkEixosWrapper">
-            <input type="checkbox" id="showAxes" onchange="renderizar()" />
-            <span style="font-size: 0.85rem; font-weight: 600; color: #475569"
-              >Exibir Eixos Verticais</span
-            >
-          </label>
-        </div>
+        </label>
 
         <label
           for="dadosText"
@@ -704,13 +669,13 @@ JUN, 198000, 170000, 116.4</textarea
       </div>
     </div>
 
-    <!-- MODAL DE EXEMPLOS -->
+    <!-- MODAL DE EXEMPLOS AMPLIADO -->
     <div id="modalExemplos" class="modal-bg">
       <div class="modal-card">
         <h3 style="margin-top: 0; color: #0f172a">📄 Modelos de Dados</h3>
         <p style="font-size: 13px; color: #64748b; margin-bottom: 20px">
-          Clique em <b>"Usar Exemplo"</b> para carregar os dados no formato
-          correto.
+          Clique em <b>"Usar Exemplo"</b> para preencher a caixa de dados
+          automaticamente.
         </p>
 
         <div class="exemplo-block">
@@ -842,6 +807,26 @@ Erro de faturamento, 5</pre
           >
         </div>
 
+        <div class="exemplo-block">
+          <div class="exemplo-header">
+            <strong>Cascata (Waterfall)</strong>
+            <button
+              class="btn-usar-exemplo"
+              onclick="carregarDados('waterfall')"
+            >
+              Usar Exemplo
+            </button>
+          </div>
+          <pre id="ex-waterfall" class="exemplo-texto">
+Faturamento Bruto, 150000
+Devoluções, -12500
+Impostos, -22000
+Ganhos com Roteirização, 8400
+Avarias no CD, -3100
+Multas de Atraso, -1500</pre
+          >
+        </div>
+
         <button
           onclick="fecharModalExemplos()"
           style="background: #ef4444; margin-top: 10px"
@@ -857,27 +842,26 @@ Erro de faturamento, 5</pre
 
       const descricoes = {
         hibrido_meta_real:
-          "<strong>🎯 Situação:</strong> Acompanhamento de Metas.<br><strong>📖 Leitura:</strong> Compara o volume Realizado com a Meta, sobrepondo uma linha de atingimento.",
+          "<strong>🎯 Situação:</strong> Acompanhamento de Metas.<br><strong>📖 Leitura:</strong> Compara o volume Realizado (1ª barra) com a Meta (2ª barra), sobrepondo uma linha indicando a % de atingimento lida no eixo direito.",
         comparacao_oficial:
-          "<strong>🎯 Situação:</strong> Comparação Oficial de TMO.<br><strong>📖 Leitura:</strong> Monitoramento de duas métricas de tempo. Gráfico com linhas suaves e legendas inteligentes.",
+          "<strong>🎯 Situação:</strong> Comparação Oficial de TMO.<br><strong>📖 Leitura:</strong> Monitoramento de duas métricas de tempo (Previsto vs Realizado). Gráfico com linhas suaves e legendas inteligentes.",
         desvio_tmo:
-          "<strong>🎯 Situação:</strong> Acompanhamento de Desvio com Tabela Base.<br><strong>📖 Leitura:</strong> A linha exibe o percentual de desvio enquanto o eixo X exibe os dados empilhados.",
+          "<strong>🎯 Situação:</strong> Acompanhamento de Desvio com Tabela Base.<br><strong>📖 Leitura:</strong> A linha exibe o percentual de desvio enquanto o eixo X funciona como uma tabela de dados exibindo o Realizado, a Meta e o Mês empilhados.",
         dual_area:
-          "<strong>🎯 Situação:</strong> Comparação de Duas Séries Temporais.<br><strong>📖 Leitura:</strong> Monitore a evolução de duas métricas ao longo dos meses. A sobreposição das áreas coloridas facilita a visualização.",
+          "<strong>🎯 Situação:</strong> Comparação de Duas Séries Temporais.<br><strong>📖 Leitura:</strong> Monitore a evolução de duas métricas ao longo dos meses. A sobreposição das áreas coloridas facilita a visualização do volume e do distanciamento.",
         ishikawa:
           "<strong>🎯 Situação:</strong> Descoberta de Causa-Raiz.<br><strong>📖 Leitura:</strong> O problema fica na 'cabeça'. As espinhas categorizam as causas menores e destrincham o gargalo.",
         pareto:
-          "<strong>🎯 Situação:</strong> Priorização Operacional.<br><strong>📖 Leitura:</strong> A linha vermelha mostra o % acumulado. Foque sempre nas barras que formam os 80%.",
+          "<strong>🎯 Situação:</strong> Priorização Operacional.<br><strong>📖 Leitura:</strong> A linha vermelha mostra o % acumulado. Foque sempre em resolver as barras que formam os primeiros 80%.",
         waterfall:
-          "<strong>🎯 Situação:</strong> Entendimento de Variações.<br><strong>📖 Leitura:</strong> Barras verdes somam (ganhos), barras vermelhas subtraem (perdas).",
-        bar: "<strong>🎯 Situação:</strong> Comparação Absoluta.<br><strong>📖 Leitura:</strong> Usado para analisar a diferença crua de volumes.",
+          "<strong>🎯 Situação:</strong> Entendimento de Variações.<br><strong>📖 Leitura:</strong> A primeira e última barra são os totais. Barras verdes somam (ganhos), barras vermelhas subtraem (perdas).",
+        bar: "<strong>🎯 Situação:</strong> Comparação Absoluta.<br><strong>📖 Leitura:</strong> Usado para analisar a diferença crua de volumes entre filiais, produtos ou turnos.",
         doughnut:
           "<strong>🎯 Situação:</strong> Visão de Composição (Partes de um Todo).<br><strong>📖 Leitura:</strong> Mostra a fatia exata que cada categoria representa do montante global consolidado.",
-        line: "<strong>🎯 Situação:</strong> Acompanhamento de Tendência/Intraday.<br><strong>📖 Leitura:</strong> Avalie a linha do tempo para identificar picos ou quedas sequenciais.",
+        line: "<strong>🎯 Situação:</strong> Acompanhamento de Tendência/Intraday.<br><strong>📖 Leitura:</strong> Avalie a linha do tempo (horas ou dias) para identificar anomalias, picos ou quedas sequenciais.",
       };
 
       function parseTime(timeStr) {
-        if (!timeStr) return 0;
         const parts = timeStr.trim().split(":");
         let secs = 0;
         if (parts.length === 3) {
@@ -891,7 +875,6 @@ Erro de faturamento, 5</pre
       }
 
       function formatTime(secs) {
-        if (isNaN(secs) || secs == null) return "00:00:00";
         const h = Math.floor(secs / 3600)
           .toString()
           .padStart(2, "0");
@@ -902,50 +885,6 @@ Erro de faturamento, 5</pre
           .toString()
           .padStart(2, "0");
         return `${h}:${m}:${s}`;
-      }
-
-      // Função Segura para formatar valores
-      function formatarValorAbreviado(val) {
-        if (isNaN(val) || val == null) return "0";
-        const isMoedaEl = document.getElementById("isMoeda");
-        const isMoeda = isMoedaEl ? isMoedaEl.checked : false;
-        let num = Math.abs(val);
-        let prefix = isMoeda ? "R$ " : "";
-
-        if (num >= 1000000) {
-          return (
-            prefix +
-            (val / 1000000).toLocaleString("pt-BR", {
-              maximumFractionDigits: 1,
-            }) +
-            "M"
-          );
-        } else if (num >= 1000) {
-          return (
-            prefix +
-            (val / 1000).toLocaleString("pt-BR", { maximumFractionDigits: 1 }) +
-            "k"
-          );
-        }
-        if (isMoeda)
-          return val.toLocaleString("pt-BR", {
-            style: "currency",
-            currency: "BRL",
-          });
-        return val.toLocaleString("pt-BR");
-      }
-
-      function formatarValorCompleto(val) {
-        if (isNaN(val) || val == null) return "0";
-        const isMoedaEl = document.getElementById("isMoeda");
-        const isMoeda = isMoedaEl ? isMoedaEl.checked : false;
-        if (isMoeda) {
-          return val.toLocaleString("pt-BR", {
-            style: "currency",
-            currency: "BRL",
-          });
-        }
-        return val.toLocaleString("pt-BR");
       }
 
       function abrirModalExemplos() {
@@ -966,7 +905,31 @@ Erro de faturamento, 5</pre
           document.getElementById("isMoeda").checked = true;
           document.getElementById("corPeixe").value = "#3b82f6";
           document.getElementById("corSecundaria").value = "#94a3b8";
-          document.getElementById("corDestaque").value = "#ef4444";
+        } else if (tipo === "waterfall") {
+          document.getElementById("titulo").value =
+            "RESULTADO FINANCEIRO DO MÊS";
+          document.getElementById("isMoeda").checked = true;
+        } else if (tipo === "pareto") {
+          document.getElementById("titulo").value =
+            "MOTIVOS DE DEVOLUÇÃO (TOP OFFENDERS)";
+          document.getElementById("isMoeda").checked = false;
+        } else if (tipo === "doughnut") {
+          document.getElementById("titulo").value =
+            "DISTRIBUIÇÃO DE CUSTOS OPERACIONAIS";
+          document.getElementById("isMoeda").checked = true;
+        } else if (tipo === "line") {
+          document.getElementById("titulo").value =
+            "VOLUME DE EXPEDIÇÃO INTRADAY";
+          document.getElementById("isMoeda").checked = false;
+        } else if (tipo === "dual_area") {
+          document.getElementById("titulo").value =
+            "EVOLUÇÃO DO TMO (CALL CENTER) - 2026";
+          document.getElementById("isMoeda").checked = false;
+          document.getElementById("corPeixe").value = "#10b981";
+        } else if (tipo === "desvio_tmo") {
+          document.getElementById("titulo").value = "Desvio TMO";
+          document.getElementById("isMoeda").checked = false;
+          document.getElementById("corPeixe").value = "#1e293b";
         } else if (tipo === "comparacao_oficial") {
           document.getElementById("titulo").value =
             "COMPARAÇÃO OFICIAL (TMO FOR vs REAL)";
@@ -975,7 +938,7 @@ Erro de faturamento, 5</pre
           document.getElementById("corSecundaria").value = "#707070";
           document.getElementById("corFundo").value = "#ffffff";
         } else {
-          document.getElementById("titulo").value = "ANÁLISE GERENCIAL";
+          document.getElementById("titulo").value = "ANÁLISE DE CAUSA RAIZ";
           document.getElementById("isMoeda").checked = false;
         }
 
@@ -990,7 +953,6 @@ Erro de faturamento, 5</pre
         const dica = document.getElementById("dicaTexto");
         const info = document.getElementById("infoGrafico");
         const checkMoeda = document.getElementById("checkMoedaWrapper");
-        const checkEixo = document.getElementById("checkEixosWrapper");
 
         info.style.display = "block";
         info.innerHTML = descricoes[tipo];
@@ -999,27 +961,22 @@ Erro de faturamento, 5</pre
           dica.innerHTML =
             "Formato: <b>Problema: Título</b> na 1ª linha.<br>Nas outras: <b>Categoria: Causa 1, Causa 2</b>.";
           checkMoeda.style.display = "none";
-          checkEixo.style.display = "none";
         } else if (tipo === "dual_area" || tipo === "comparacao_oficial") {
           dica.innerHTML =
-            "Formato (3 col): <b>Mês, Série 1, Série 2</b> na 1ª linha.";
+            "Formato (3 col): <b>Mês, Série 1, Série 2</b> na 1ª linha.<br>Valores em tempo (ex: <b>00:04:45</b>) ou decimais.";
           checkMoeda.style.display = "none";
-          checkEixo.style.display = "flex";
         } else if (tipo === "hibrido_meta_real") {
           dica.innerHTML =
             "Formato (4 col): <b>Período, Realizado, Meta, % Atingimento</b> na 1ª linha.";
           checkMoeda.style.display = "flex";
-          checkEixo.style.display = "flex";
         } else if (tipo === "desvio_tmo") {
           dica.innerHTML =
-            "Formato (4 col): <b>Mês, Realizado, Meta, Desvio %</b> na 1ª linha.";
+            "Formato (4 col): <b>Mês, Realizado, Meta, Desvio %</b> na 1ª linha.<br>Nas seguintes: <b>JAN, 00:04:28, 00:04:45, -5.96</b>.";
           checkMoeda.style.display = "none";
-          checkEixo.style.display = "flex";
         } else {
           dica.innerHTML =
-            "Formato: <b>Categoria</b> <i>[Tab/Vírgula]</i> <b>Valor Numérico</b>.";
+            "Formato: <b>Categoria</b> <i>[Tab/Vírgula]</i> <b>Valor Numérico</b>. (Cole do Excel)";
           checkMoeda.style.display = "flex";
-          checkEixo.style.display = "flex";
         }
       }
 
@@ -1035,6 +992,47 @@ Erro de faturamento, 5</pre
         if (document.getElementById("tipoGrafico").value !== "ishikawa") {
           renderizar();
         }
+      }
+
+      // A MÁGICA DA ABREVIAÇÃO: Formata K e M para economizar espaço
+      function formatarValorAbreviado(val) {
+        const isMoeda = document.getElementById("isMoeda").checked;
+        let num = Math.abs(val);
+        let prefix = isMoeda ? "R$ " : "";
+
+        if (num >= 1000000) {
+          return (
+            prefix +
+            (val / 1000000).toLocaleString("pt-BR", {
+              maximumFractionDigits: 1,
+            }) +
+            "M"
+          );
+        } else if (num >= 1000) {
+          return (
+            prefix +
+            (val / 1000).toLocaleString("pt-BR", { maximumFractionDigits: 1 }) +
+            "k"
+          );
+        }
+
+        if (isMoeda)
+          return val.toLocaleString("pt-BR", {
+            style: "currency",
+            currency: "BRL",
+          });
+        return val.toLocaleString("pt-BR");
+      }
+
+      function formatarValorCompleto(val) {
+        const isMoeda = document.getElementById("isMoeda").checked;
+        if (isMoeda) {
+          return val.toLocaleString("pt-BR", {
+            style: "currency",
+            currency: "BRL",
+          });
+        }
+        return val.toLocaleString("pt-BR");
       }
 
       function abrirTelaCheia() {
@@ -1082,15 +1080,7 @@ Erro de faturamento, 5</pre
         } else {
           document.getElementById("ishikawaBox").style.display = "none";
           document.getElementById("chartContainer").style.display = "block";
-
-          try {
-            montarChartJS(tipo, titulo);
-          } catch (e) {
-            console.error(e);
-            alert(
-              "Ocorreu um erro ao gerar o gráfico. O formato dos dados pode estar incompatível. Tente carregar os dados clicando em 'Ver Exemplos'.",
-            );
-          }
+          montarChartJS(tipo, titulo);
         }
       }
 
@@ -1101,20 +1091,11 @@ Erro de faturamento, 5</pre
 
         const corPrincipal = document.getElementById("corPeixe").value;
         const corSecundaria = document.getElementById("corSecundaria").value;
-        const corDestaque = document.getElementById("corDestaque").value;
         const corTexto = document.getElementById("corTexto").value;
-
-        const corBadge1 = document.getElementById("corBadge").value;
-        const corBadge2 = document.getElementById("corBadge2").value;
-        const corBadge3 = document.getElementById("corBadge3").value;
-
+        const corBadge = document.getElementById("corBadge").value;
         const texto = document.getElementById("dadosText").value.trim();
-        const checkEixoBox = document.getElementById("showAxes");
-        const showAxes = checkEixoBox ? checkEixoBox.checked : false;
-
         const dados = [];
 
-        // Parseador Base (2 Colunas) para gráficos simples
         if (
           tipo !== "dual_area" &&
           tipo !== "desvio_tmo" &&
@@ -1124,29 +1105,23 @@ Erro de faturamento, 5</pre
           texto.split("\n").forEach((l) => {
             const p = l.split(/\t|,|;/);
             if (p.length >= 2) {
-              const v = parseFloat((p[1] || "").replace(/[^\d.-]/g, ""));
+              const v = parseFloat(p[1].replace(/[^\d.-]/g, ""));
               if (!isNaN(v)) dados.push({ r: p[0].trim(), v: v });
             }
           });
-          if (dados.length === 0) {
-            alert(
-              "Dados inválidos para este tipo de gráfico. Verifique se o formato tem 2 colunas.",
-            );
-            return;
-          }
+          if (dados.length === 0) return;
         }
 
         Chart.defaults.font.family = "'Segoe UI', sans-serif";
         Chart.defaults.color = corTexto;
 
+        // O eixo Y agora usa a abreviação para não roubar espaço do gráfico
         const configEixoY = {
-          display: showAxes,
           ticks: {
             callback: function (value) {
               return formatarValorAbreviado(value);
             },
           },
-          grid: { display: showAxes },
         };
 
         const baseOptions = {
@@ -1165,6 +1140,7 @@ Erro de faturamento, 5</pre
             legend: { display: false },
             tooltip: {
               callbacks: {
+                // Tooltip mantém o valor integral completo quando o usuário passa o mouse
                 label: function (context) {
                   let label = context.dataset.label || "";
                   if (label) {
@@ -1187,12 +1163,13 @@ Erro de faturamento, 5</pre
             },
             datalabels: {
               color: "#ffffff",
-              backgroundColor: corBadge1,
+              backgroundColor: corBadge,
               borderRadius: 6,
               padding: { top: 6, bottom: 6, left: 10, right: 10 },
               anchor: "center",
               align: "center",
               font: { weight: "bold", size: 13 },
+              // Aplica a abreviação direto nos Badges
               formatter: (val) => formatarValorAbreviado(val),
             },
           },
@@ -1203,24 +1180,18 @@ Erro de faturamento, 5</pre
           if (linhas.length < 2) return;
 
           const cabecalho = linhas[0].split(/,|\t|;/).map((c) => c.trim());
-          const labelsX = [],
-            dataReal = [],
-            dataMeta = [],
-            dataPct = [];
+          const labelsX = [];
+          const dataReal = [];
+          const dataMeta = [];
+          const dataPct = [];
 
           for (let i = 1; i < linhas.length; i++) {
             const p = linhas[i].split(/,|\t|;/);
             if (p.length >= 4) {
               labelsX.push(p[0].trim());
-              dataReal.push(
-                parseFloat((p[1] || "").replace(/[^\d.-]/g, "")) || 0,
-              );
-              dataMeta.push(
-                parseFloat((p[2] || "").replace(/[^\d.-]/g, "")) || 0,
-              );
-              dataPct.push(
-                parseFloat((p[3] || "").replace(/[^\d.-]/g, "")) || 0,
-              );
+              dataReal.push(parseFloat(p[1].replace(/[^\d.-]/g, "")) || 0);
+              dataMeta.push(parseFloat(p[2].replace(/[^\d.-]/g, "")) || 0);
+              dataPct.push(parseFloat(p[3].replace(/[^\d.-]/g, "")) || 0);
             }
           }
 
@@ -1233,14 +1204,14 @@ Erro de faturamento, 5</pre
                   type: "line",
                   label: cabecalho[3] || "% Atingimento",
                   data: dataPct,
-                  borderColor: corDestaque,
-                  backgroundColor: corDestaque,
+                  borderColor: "#ef4444",
+                  backgroundColor: "#ef4444",
                   borderWidth: 3,
                   yAxisID: "y1",
                   tension: 0.2,
                   datalabels: {
                     color: "#ffffff",
-                    backgroundColor: corBadge3,
+                    backgroundColor: "#ef4444",
                     anchor: "end",
                     align: "top",
                     offset: 8,
@@ -1255,7 +1226,7 @@ Erro de faturamento, 5</pre
                   yAxisID: "y",
                   datalabels: {
                     color: "#ffffff",
-                    backgroundColor: corBadge1,
+                    backgroundColor: corBadge,
                     anchor: "center",
                     align: "center",
                     font: { weight: "bold", size: 12 },
@@ -1270,7 +1241,7 @@ Erro de faturamento, 5</pre
                   yAxisID: "y",
                   datalabels: {
                     color: "#ffffff",
-                    backgroundColor: corBadge2,
+                    backgroundColor: "#64748b",
                     anchor: "center",
                     align: "center",
                     font: { weight: "bold", size: 12 },
@@ -1288,7 +1259,6 @@ Erro de faturamento, 5</pre
               scales: {
                 y: configEixoY,
                 y1: {
-                  display: showAxes,
                   type: "linear",
                   position: "right",
                   grid: { drawOnChartArea: false },
@@ -1304,9 +1274,10 @@ Erro de faturamento, 5</pre
           const cabecalho = linhas[0].split(/,|\t|;/).map((c) => c.trim());
           const rotulo1 = cabecalho[1] || "TMO FOR";
           const rotulo2 = cabecalho[2] || "TMO REAL";
-          const labelsX = [],
-            data1 = [],
-            data2 = [];
+
+          const labelsX = [];
+          const data1 = [];
+          const data2 = [];
 
           for (let i = 1; i < linhas.length; i++) {
             const p = linhas[i].split(/,|\t|;/);
@@ -1316,9 +1287,6 @@ Erro de faturamento, 5</pre
               data2.push(parseTime(p[2]));
             }
           }
-
-          const maxVal = Math.max(...data1, ...data2) || 1;
-          const minVal = Math.min(...data1, ...data2) || 0;
 
           chartApp = new Chart(ctx, {
             type: "line",
@@ -1391,7 +1359,11 @@ Erro de faturamento, 5</pre
               ...baseOptions,
               layout: { padding: { top: 80, bottom: 40, left: 20, right: 20 } },
               scales: {
-                y: { display: false, min: minVal * 0.9, max: maxVal * 1.1 },
+                y: {
+                  display: false,
+                  min: Math.min(...data1, ...data2) * 0.9,
+                  max: Math.max(...data1, ...data2) * 1.1,
+                },
                 x: {
                   offset: true,
                   grid: {
@@ -1425,20 +1397,18 @@ Erro de faturamento, 5</pre
           const linhas = texto.split("\n").filter((l) => l.trim() !== "");
           if (linhas.length < 2) return;
 
-          const labelsX = [],
-            dataDesvio = [];
+          const labelsX = [];
+          const dataDesvio = [];
+
           for (let i = 1; i < linhas.length; i++) {
             const p = linhas[i].split(/,|\t|;/);
             if (p.length >= 4) {
-              labelsX.push([p[1].trim(), p[2].trim(), p[0].trim()]);
-              dataDesvio.push(
-                parseFloat(
-                  (p[3] || "0")
-                    .trim()
-                    .replace(",", ".")
-                    .replace(/[^\d.-]/g, ""),
-                ) || 0,
-              );
+              const mes = p[0].trim();
+              const realizado = p[1].trim();
+              const meta = p[2].trim();
+              labelsX.push([realizado, meta, mes]);
+              let desvioStr = p[3].trim().replace(",", ".");
+              dataDesvio.push(parseFloat(desvioStr.replace(/[^\d.-]/g, "")));
             }
           }
 
@@ -1465,7 +1435,6 @@ Erro de faturamento, 5</pre
               layout: { padding: { top: 60, bottom: 20, left: 10, right: 10 } },
               scales: {
                 y: {
-                  display: showAxes,
                   grid: { color: "#e2e8f0" },
                   ticks: { callback: (val) => val + "%" },
                 },
@@ -1512,12 +1481,8 @@ Erro de faturamento, 5</pre
             const p = linhas[i].split(/,|\t|;/);
             if (p.length >= 3) {
               labelsX.push(p[0].trim());
-              data1.push(
-                parseFloat((p[1] || "0").replace(/[^\d.-]/g, "")) || 0,
-              );
-              data2.push(
-                parseFloat((p[2] || "0").replace(/[^\d.-]/g, "")) || 0,
-              );
+              data1.push(parseFloat(p[1].replace(/[^\d.-]/g, "")));
+              data2.push(parseFloat(p[2].replace(/[^\d.-]/g, "")));
             }
           }
 
@@ -1565,12 +1530,10 @@ Erro de faturamento, 5</pre
                   align: "top",
                   offset: 4,
                   font: { weight: "bold", size: 12 },
-                  formatter: (val) => {
-                    const check = document.getElementById("isMoeda");
-                    return check && check.checked
+                  formatter: (val) =>
+                    document.getElementById("isMoeda").checked
                       ? formatarValorAbreviado(val)
-                      : formatarValorAbreviado(val) + "s";
-                  },
+                      : formatarValorAbreviado(val) + "s",
                 },
               },
             },
@@ -1599,13 +1562,13 @@ Erro de faturamento, 5</pre
                   label: "% Acumulado",
                   data: pct,
                   type: "line",
-                  borderColor: corDestaque,
-                  backgroundColor: corDestaque,
+                  borderColor: "#ef4444",
+                  backgroundColor: "#ef4444",
                   yAxisID: "y1",
                   borderWidth: 3,
                   datalabels: {
                     color: "#ffffff",
-                    backgroundColor: corBadge3,
+                    backgroundColor: "#ef4444",
                     anchor: "end",
                     align: "top",
                     offset: 8,
@@ -1618,13 +1581,7 @@ Erro de faturamento, 5</pre
               ...baseOptions,
               scales: {
                 y: configEixoY,
-                y1: {
-                  display: showAxes,
-                  type: "linear",
-                  position: "right",
-                  max: 100,
-                  min: 0,
-                },
+                y1: { type: "linear", position: "right", max: 100, min: 0 },
               },
             },
           });
@@ -1668,8 +1625,8 @@ Erro de faturamento, 5</pre
           const pieColors = [
             corPrincipal,
             corSecundaria,
-            corDestaque,
             "#f59e0b",
+            "#ef4444",
             "#8b5cf6",
             "#64748b",
             "#06b6d4",
@@ -1865,15 +1822,8 @@ Erro de faturamento, 5</pre
         document.getElementById("tipoGrafico").value = "hibrido_meta_real";
         document.getElementById("corPeixe").value = "#3b82f6";
         document.getElementById("corSecundaria").value = "#94a3b8";
-        document.getElementById("corDestaque").value = "#ef4444";
         document.getElementById("corFundo").value = "#ffffff";
-
-        const elMoeda = document.getElementById("isMoeda");
-        if (elMoeda) elMoeda.checked = true;
-
-        const elEixos = document.getElementById("showAxes");
-        if (elEixos) elEixos.checked = false; // Gráfico limpo (sem eixos verticais) por padrão
-
+        document.getElementById("isMoeda").checked = true;
         mudarDica();
         atualizarCores();
         renderizar();
